@@ -1,0 +1,1 @@
+const games=[{title:'Neon Dodge',description:'Dodge the falling blocks.',category:'Arcade',icon:'◆',colors:['#6250d8','#1b9ca0'],iframeUrl:'games/neon-dodge.html'},{title:'Memory Match',description:'Find every matching pair.',category:'Puzzle',icon:'✦',colors:['#e05c91','#7d3ca8'],iframeUrl:'games/memory.html'}];

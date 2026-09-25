@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Carlin Game Hub — quick browser games that run great on Chromebooks.">
+  <title>Carlin Game Hub</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./"><span class="brand-mark">▶</span><span>Carlin <b>Game Hub</b></span></a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">☀️</button>
+  </header>
+  <main>
+    <section class="hero"><div><p class="eyebrow">READY WHEN YOU ARE</p><h1>Play something<br><span>awesome.</span></h1><p class="hero-copy">A lightweight collection of browser games made to run smoothly on your Chromebook.</p><a class="primary-button" href="#games">Browse games <span>↓</span></a></div><div class="hero-art" aria-hidden="true"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="pixel">✦</div></div></section>
+    <section class="toolbar" id="games"><div><p class="eyebrow">THE ARCADE</p><h2>Pick a game</h2></div><div class="controls"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search games..." autocomplete="off"></label><div id="categories" class="categories"></div></div></section>
+    <div id="gameGrid" class="game-grid" aria-live="polite"></div><p id="emptyState" class="empty hidden">No games matched that search.</p>
+    <section class="how-to"><div><p class="eyebrow">GROW THE HUB</p><h2>Add your own games</h2></div><p>Open <code>games.js</code>, copy a game object, and replace its title, thumbnail, and <code>iframeUrl</code>. The game will automatically appear here.</p></section>
+  </main><footer><span>© 2026 Carlin Game Hub</span><span>Built for fast Chromebook play</span></footer><script src="games.js"></script><script src="app.js"></script>
+</body></html>
