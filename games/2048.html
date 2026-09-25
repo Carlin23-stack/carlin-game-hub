@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2048</title>
+  <style>
+    :root {
+      --bg: #1a1120;
+      --panel: #2a1f38;
+      --tile-empty: #3f2d4c;
+      --tile-2: #f6f1e9;
+      --tile-4: #eee0c8;
+      --tile-8: #f2b179;
+      --tile-16: #f59563;
+      --tile-32: #f67c5f;
+      --tile-64: #f65e3b;
+      --tile-128: #edcf72;
+      --tile-256: #edcc61;
+      --tile-512: #edc850;
+      --tile-1024: #edc53f;
+      --tile-2048: #edc22e;
+      --text-dark: #2d1d35;
+      --text-light: #faf6ff;
+      --accent: #8a6be7;
+      --shadow: rgba(0,0,0,0.24);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #161124, #20182e);
+      color: var(--text-light);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .game-shell {
+      width: min(92vw, 480px);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 18px 40px var(--shadow);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .score-box {
+      background: var(--panel);
+      padding: 10px 14px;
+      border-radius: 12px;
+      min-width: 90px;
+      text-align: center;
+    }
+    .score-box small {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      opacity: 0.8;
+      text-transform: uppercase;
+    }
+    .score-box strong {
+      font-size: 24px;
+      line-height: 1.2;
+    }
+    button {
+      background: var(--accent);
+      color: var(--text-light);
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .board {
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      aspect-ratio: 1;
+    }
+    .cell {
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--tile-empty);
+      color: var(--text-dark);
+      font-weight: 800;
+      font-size: clamp(24px, 5vw, 42px);
+      user-select: none;
+      transition: transform 0.08s ease, background 0.15s ease;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .cell.empty { background: var(--tile-empty); color: transparent; }
+    .cell[data-v="2"] { background: var(--tile-2); }
+    .cell[data-v="4"] { background: var(--tile-4); }
+    .cell[data-v="8"] { background: var(--tile-8); color: var(--text-light); }
+    .cell[data-v="16"] { background: var(--tile-16); color: var(--text-light); }
+    .cell[data-v="32"] { background: var(--tile-32); color: var(--text-light); }
+    .cell[data-v="64"] { background: var(--tile-64); color: var(--text-light); }
+    .cell[data-v="128"] { background: var(--tile-128); font-size: clamp(20px, 4.3vw, 34px); }
+    .cell[data-v="256"] { background: var(--tile-256); font-size: clamp(20px, 4.3vw, 34px); }
+    .cell[data-v="512"] { background: var(--tile-512); font-size: clamp(20px, 4.3vw, 34px); }
+    .cell[data-v="1024"] { background: var(--tile-1024); font-size: clamp(16px, 3.4vw, 28px); }
+    .cell[data-v="2048"] { background: var(--tile-2048); font-size: clamp(16px, 3.4vw, 28px); }
+    .message {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 15px;
+      min-height: 20px;
+      opacity: 0.9;
+    }
+    @media (max-width: 420px) {
+      .game-shell { padding: 14px; }
+      .topbar { gap: 10px; }
+      .score-box strong { font-size: 20px; }
+      button { padding: 9px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-shell">
+    <div class="topbar">
+      <div class="score-box">
+        <small>Score</small>
+        <strong id="score">0</strong>
+      </div>
+      <button id="newGameBtn" type="button">New game</button>
+    </div>
+    <div class="board" id="board" aria-label="2048 game board"></div>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const size = 4;
+    let board = [];
+    let score = 0;
+    let won = false;
+    let over = false;
+
+    const boardEl = document.getElementById('board');
+    const scoreEl = document.getElementById('score');
+    const messageEl = document.getElementById('message');
+    const newGameBtn = document.getElementById('newGameBtn');
+
+    function emptyBoard() {
+      return Array.from({ length: size }, () => Array(size).fill(0));
+    }
+
+    function getEmptyCells() {
+      const cells = [];
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (board[y][x] === 0) cells.push({ x, y });
+        }
+      }
+      return cells;
+    }
+
+    function randomTile() {
+      const empty = getEmptyCells();
+      if (!empty.length) return;
+      const cell = empty[Math.floor(Math.random() * empty.length)];
+      board[cell.y][cell.x] = Math.random() < 0.9 ? 2 : 4;
+    }
+
+    function resetGame() {
+      board = emptyBoard();
+      score = 0;
+      won = false;
+      over = false;
+      messageEl.textContent = '';
+      randomTile();
+      randomTile();
+      render();
+    }
+
+    function render() {
+      scoreEl.textContent = score;
+      boardEl.innerHTML = '';
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const val = board[y][x];
+          const cell = document.createElement('div');
+          cell.className = `cell ${val === 0 ? 'empty' : ''}`;
+          cell.dataset.v = val || '';
+          cell.textContent = val === 0 ? '' : val;
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    function slideLine(line) {
+      const filtered = line.filter(v => v !== 0);
+      const merged = [];
+      for (let i = 0; i < filtered.length; i++) {
+        if (filtered[i] === filtered[i + 1]) {
+          const value = filtered[i] * 2;
+          merged.push(value);
+          score += value;
+          if (value === 2048) won = true;
+          i++;
+        } else {
+          merged.push(filtered[i]);
+        }
+      }
+      while (merged.length < size) merged.push(0);
+      return merged;
+    }
+
+    function move(direction) {
+      if (over) return;
+      let moved = false;
+      let newBoard = emptyBoard();
+
+      if (direction === 'left' || direction === 'right') {
+        for (let y = 0; y < size; y++) {
+          let row = board[y].slice();
+          if (direction === 'right') row.reverse();
+          const merged = slideLine(row);
+          if (direction === 'right') merged.reverse();
+          newBoard[y] = merged;
+          if (JSON.stringify(row) !== JSON.stringify(merged)) moved = true;
+        }
+      }
+
+      if (direction === 'up' || direction === 'down') {
+        for (let x = 0; x < size; x++) {
+          let column = [];
+          for (let y = 0; y < size; y++) column.push(board[y][x]);
+          if (direction === 'down') column.reverse();
+          const merged = slideLine(column);
+          if (direction === 'down') merged.reverse();
+          for (let y = 0; y < size; y++) newBoard[y][x] = merged[y];
+          if (JSON.stringify(column) !== JSON.stringify(merged)) moved = true;
+        }
+      }
+
+      if (!moved) return;
+
+      board = newBoard;
+      randomTile();
+
+      if (won) {
+        messageEl.textContent = 'You reached 2048!';
+      } else if (!canMove()) {
+        over = true;
+        messageEl.textContent = 'Game over!';
+      } else {
+        messageEl.textContent = '';
+      }
+      render();
+    }
+
+    function canMove() {
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (board[y][x] === 0) return true;
+          if (x < size - 1 && board[y][x] === board[y][x + 1]) return true;
+          if (y < size - 1 && board[y][x] === board[y + 1][x]) return true;
+        }
+      }
+      return false;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      if (['arrowleft','a'].includes(key)) move('left');
+      if (['arrowright','d'].includes(key)) move('right');
+      if (['arrowup','w'].includes(key)) move('up');
+      if (['arrowdown','s'].includes(key)) move('down');
+    });
+
+    newGameBtn.addEventListener('click', resetGame);
+
+    resetGame();
+  </script>
+</body>
+</html>
