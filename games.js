@@ -47,12 +47,20 @@ const games = [
     colors: ['#ff3333', '#ff6600'],
     iframeUrl: 'https://carlin23-stack.github.io/call-of-max/'
   },
-{
-  title: 'TRUMP Simulator',
-  description: 'Take on presidential tasks and experience a chaotic White House simulator.',
-  category: 'Simulation',
-  icon: '🇺🇸',
-  colors: ['#b91c1c', '#1d4ed8'],
-  iframeUrl: 'https://carlin23-stack.github.io/Trump-Simulator/'
-}
+  {
+    title: 'TRUMP Simulator',
+    description: 'Take on presidential tasks and experience a chaotic White House simulator.',
+    category: 'Simulation',
+    icon: '🇺🇸',
+    colors: ['#b91c1c', '#1d4ed8'],
+    iframeUrl: 'https://carlin23-stack.github.io/Trump-Simulator/'
+  },
+  {
+    title: 'Wood Chess',
+    description: 'Play chess in a relaxing wooden lodge and climb the ranks.',
+    category: 'Strategy',
+    icon: '♟️',
+    colors: ['#8b5a2b', '#d4a373'],
+    iframeUrl: 'https://carlin23-stack.github.io/Wood-Chess/'
+  }
 ];
