@@ -62,5 +62,13 @@ const games = [
     icon: '♟️',
     colors: ['#8b5a2b', '#d4a373'],
     iframeUrl: 'https://carlin23-stack.github.io/Wood-Chess/'
+  },
+  {
+    title: 'Western Michigan Football Clicker',
+    description: 'Build the Broncos, click for points, upgrade your team, and dominate the football world.',
+    category: 'Strategy',
+    icon: '🐴',
+    colors: ['#5b2c83', '#f5a623'],
+    iframeUrl: 'https://carlin23-stack.github.io/Western-Michigan-Clicker/'
   }
 ];
